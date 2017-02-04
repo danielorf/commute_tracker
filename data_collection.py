@@ -68,7 +68,6 @@ while True:
 
 
 
-
     # sql2 = "INSERT INTO `commute` (`date_time`, `time2red`, `time2home`) VALUES (%s, %s, %s)"
     # cursor.execute(sql2, (int(time.time()), int(time2red['value']), int(time2home['value'])))
     # #cursor.execute(sql2, (1, 2, 3))
