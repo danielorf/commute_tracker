@@ -1,0 +1,3 @@
+googlemaps==2.4.5
+PyMySQL==0.7.9
+requests==2.11.1
