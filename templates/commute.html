@@ -7,12 +7,14 @@
 
   <div id="myDiv" style="width: 100%; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
   <script>
+
       var trace3 = {
         x: {{ plot_data_date|tojson|safe }},
         y: {{ plot_data_min2red }},
         name: {{ plot_to_red_name|tojson|safe }},
         //mode: 'lines+markers',
-        line: {shape: 'spline', smoothing: '50'},
+        mode: 'markers',
+        //line: {shape: 'spline', smoothing: '50'},
         opacity: 0.75,
         type: 'scatter'
       };
@@ -22,14 +24,35 @@
         y: {{ plot_data_min2home }},
         name: {{ plot_to_home_name|tojson|safe }},
         //mode: 'lines+markers',
-        line: {shape: 'spline', smoothing: '50'},
+        mode: 'markers',
+        //line: {shape: 'spline', smoothing: '50'},
         opacity: 0.75,
         type: 'scatter'
       };
 
+      var layout = {
+          title: 'Commute Times',
+          xaxis: {
+            title: 'Departure Time',
+            titlefont: {
+              family: 'Courier New, monospace',
+              size: 18,
+              color: '#7f7f7f'
+            }
+          },
+          yaxis: {
+            title: 'Commute Time (min)',
+            titlefont: {
+              family: 'Courier New, monospace',
+              size: 18,
+              color: '#7f7f7f'
+            }
+          }
+      };
+
     var data = [trace3, trace4];
 
-    Plotly.newPlot('myDiv', data);
+    Plotly.newPlot('myDiv', data, layout);
 
   </script>
 </body>
