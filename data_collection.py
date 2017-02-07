@@ -69,4 +69,4 @@ while True:
     print("commited to db")
     db.close()
     print("closed db connection")
-    time.sleep(600)
+    time.sleep(450)

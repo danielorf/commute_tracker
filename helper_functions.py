@@ -12,11 +12,11 @@ def date_formatter(val):
         print(val)
 
 
-def get_commute_data():
+def get_commute_data(num_records):
     conn = pymysql.connect(host='192.168.100.3', port=32776, user='admin', passwd='oYwU50bjQ4Et', db='commute')
     cur = conn.cursor()
 
-    cur.execute("select * from commute order by id desc limit 1000")
+    cur.execute("select * from commute order by id desc limit {}".format(str(num_records)))
 
     date_list = []
     id_list = []
