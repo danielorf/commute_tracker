@@ -10,7 +10,7 @@ def not_found(error):
 
 @app.route('/commute/', methods=['GET'])
 def get_commute_plot():
-    date_list, min_to_red_list, min_to_home_list = get_commute_data(1000)
+    date_list, min_to_red_list, min_to_home_list = get_commute_data(5000)
     print(date_list)
     print(min_to_red_list)
     return render_template('commute.html',

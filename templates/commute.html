@@ -16,8 +16,17 @@
 
   <div class="btn-group btn-group-justified" role="group" aria-label="...">
       <div class="btn-group" role="group">
-          <a class="btn btn-default" href="/commute/" role="button">All</a>
-      </div>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Recent <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
+              <li><a href="/commute/192">1 Day</a>
+              </li>
+              <li><a href="/commute/384">2 Days</a>
+              </li>
+              <li><a href="/commute/576">3 Days</a>
+              </li>
+          </ul>
+        </div>
       <div class="btn-group" role="group">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">By Day <span class="caret"></span>
           </button>
