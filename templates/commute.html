@@ -1,9 +1,63 @@
+<!DOCTYPE html>
+<!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>-->
+
 <head>
-  <!-- Plotly.js -->
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
 </head>
 
 <body>
+
+
+  <div class="btn-group btn-group-justified" role="group" aria-label="...">
+      <div class="btn-group" role="group">
+          <a class="btn btn-default" href="/commute/" role="button">All</a>
+      </div>
+      <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">By Day <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
+              <li><a href="/commute_day/6">Sunday</a>
+              </li>
+              <li><a href="/commute_day/0">Monday</a>
+              </li>
+              <li><a href="/commute_day/1">Tuesday</a>
+              </li>
+              <li><a href="/commute_day/2">Wednesday</a>
+              </li>
+              <li><a href="/commute_day/3">Thursday</a>
+              </li>
+              <li><a href="/commute_day/4">Friday</a>
+              </li>
+              <li><a href="/commute_day/5">Saturday</a>
+              </li>
+          </ul>
+        </div>
+      <div class="btn-group" role="group">
+          <a class="btn btn-default" href="/commute_day/8" role="button">Weekdays</a>
+      </div>
+      <div class="btn-group" role="group">
+          <a class="btn btn-default" href="/commute_day/9" role="button">Weekends</a>
+      </div>
+
+  </div>
+
+
+<!--<div class="btn-group btn-group-justified">-->
+    <!--&lt;!&ndash;<h2 class="text-primary text-center">Testing123</h2>&ndash;&gt;-->
+    <!--<a class="btn btn-default" type="button" href="/commute_day/0">Monday</a>-->
+    <!--<a class="btn btn-default" type="button" href="/commute_day/1">Tuesday</a>-->
+    <!--<a class="btn btn-default" type="button" href="/commute_day/2">Wednesday</a>-->
+    <!--<a class="btn btn-default" type="button" href="/commute_day/3">Thursday</a>-->
+    <!--<a class="btn btn-default" type="button" href="/commute_day/4">Friday</a>-->
+    <!--<a class="btn btn-default" type="button" href="/commute_day/5">Saturday</a>-->
+    <!--<a class="btn btn-default" type="button" href="/commute_day/6">Sunday</a>-->
+<!--</div>-->
 
   <div id="myDiv" style="width: 100%; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
   <script>

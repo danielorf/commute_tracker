@@ -47,10 +47,26 @@ def get_commute_data_by_day(num_records, day_code):
     conn = pymysql.connect(host='192.168.100.3', port=32776, user='admin', passwd='oYwU50bjQ4Et', db='commute')
     cur = conn.cursor()
 
-    cur.execute("select * from commute "
-                "where day_code={} "
-                "order by hour, minute "
-                "desc limit {}".format(day_code, str(num_records)))
+    if (day_code >= 0 and day_code <= 6):
+        cur.execute("select * from commute "
+                    "where day_code={} "
+                    #"order by hour asc, minute asc "
+                    "limit {}".format(day_code, str(num_records)))
+    elif (day_code == 7):
+        cur.execute("select * from commute "
+                    #"where day_code={} "
+                    # "order by hour asc, minute asc "
+                    "limit {}".format(str(num_records)))
+    elif (day_code == 8):
+        cur.execute("select * from commute "
+                    "where not (day_code=5 or day_code=6) "
+                    "order by hour asc, minute asc "
+                    "limit {}".format(str(num_records)))
+    elif (day_code == 9):
+        cur.execute("select * from commute "
+                    "where day_code=5 or day_code=6 "
+                    "order by hour asc, minute asc "
+                    "limit {}".format(str(num_records)))
 
     date_list = []
     min_to_red_list = []

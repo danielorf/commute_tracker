@@ -38,7 +38,7 @@ def get_commute_plot_num(num):
 
 @app.route('/commute_day/<int:day_code>', methods=['GET'])
 def get_commute_plot_by_day(day_code):
-    date_list, min_to_red_list, min_to_home_list = get_commute_data_by_day(2000,day_code)
+    date_list, min_to_red_list, min_to_home_list = get_commute_data_by_day(5000,day_code)
     print(date_list)
     print(min_to_red_list)
     return render_template('commute.html',
