@@ -85,3 +85,25 @@ def get_commute_data_by_day(num_records, day_code):
 
     return date_list, min_to_red_list, min_to_home_list
 
+def get_fastest_transit(directions_object_array, now_epoch):
+    fastest_dir = directions_object_array[0]
+    fastest_dir_time = (directions_object_array[0]['legs'][0]['arrival_time']['value'] - now_epoch) / 60
+    for dirobj in directions_object_array:
+        temp_dir_time = (dirobj['legs'][0]['arrival_time']['value'] - now_epoch) / 60
+        if temp_dir_time < fastest_dir_time:
+            fastest_dir = dirobj
+            fastest_dir_time = temp_dir_time
+
+    fastest_dir_steps = fastest_dir['legs'][0]['steps']
+    primary_step = fastest_dir_steps[0]
+    primary_step_time = 0
+    for step in fastest_dir_steps:
+        if step['travel_mode'] == 'TRANSIT':
+            temp_step_time = int(step['duration']['value'])
+            if temp_step_time > primary_step_time:
+                primary_step = step
+                primary_step_time = temp_step_time
+
+    fastest_bus_route = primary_step['transit_details']['line']['short_name']
+
+    return fastest_bus_route, round(fastest_dir_time, 1)
