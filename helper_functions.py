@@ -1,4 +1,7 @@
-import pymysql
+import pymysql, tokens_and_addresses
+from pandas.io import sql
+import time
+
 
 # Auto formats date values (month, day, hour, minute) to two digits - needed for proper date formatting by Plotly
 def date_formatter(val):
@@ -13,38 +16,58 @@ def date_formatter(val):
 
 
 def get_commute_data(num_records):
-    conn = pymysql.connect(host='192.168.100.3', port=32776, user='admin', passwd='oYwU50bjQ4Et', db='commute')
-    cur = conn.cursor()
 
-    cur.execute("select * from commute order by id desc limit {}".format(str(num_records)))
+    conn = pymysql.connect(host=tokens_and_addresses.sql_host, port=tokens_and_addresses.sql_port,
+                           user=tokens_and_addresses.sql_username, passwd=tokens_and_addresses.sql_password,
+                           db='commute2')
+    cur = conn.cursor()
+    # cur.execute("select * from commute2 order by id desc limit {}".format(str(num_records)))
+
+    query = "select * from commute2 order by id desc limit {}".format(str(num_records))
+    commute_df = sql.read_sql(query, con=conn)
+
+    start_time = time.time()
 
     date_list = []
     #id_list = []
-    min_to_red_list = []
-    min_to_home_list = []
+    drive_time_home2downtown_list = commute_df['time_home2downtown'].tolist()
+    drive_time_downtown2home_list = commute_df['time_downtown2home'].tolist()
+    bus_time_home2downtown_list = commute_df['time_home2downtownbus'].tolist()
+    bus_route_home2downtown_list = commute_df['route_home2downtownbus'].tolist()
+    bus_time_downtown2home_list = commute_df['time_downtown2homebus'].tolist()
+    bus_route_downtown2home_list = commute_df['route_downtown2homebus'].tolist()
+    drive_time_home2mukilteo_list = commute_df['time_home2mukilteo'].tolist()
+    drive_time_mukilteo2home_list = commute_df['time_mukilteo2home'].tolist()
 
-    for row in cur:
-        year = date_formatter(row[1])
-        month = date_formatter(row[2])
-        day = date_formatter(row[3])
-        hour = date_formatter(row[5])
-        minute = date_formatter(row[6])
+
+    for row in commute_df.itertuples():
+        # TODO: Consider pushing date formatting into the data collection portion of project.
+        # It will require storing as string though.  Time the current implementation first.
+        year = date_formatter(row.year)
+        month = date_formatter(row.month)
+        day = date_formatter(row.day)
+        hour = date_formatter(row.hour)
+        minute = date_formatter(row.minute)
         date = '{}-{}-{} {}:{}'.format(year, month, day, hour, minute)
         date_list.append(date)
-        #id_list.append(row[0])
-        min_to_red_list.append(round(float(row[7]) / 60, 2))
-        min_to_home_list.append(round(float(row[8]) / 60, 2))
+
+    print('Total time: ', time.time() - start_time)
 
     cur.close()
     conn.close()
 
-    return date_list, min_to_red_list, min_to_home_list
+    return date_list, drive_time_home2downtown_list, drive_time_downtown2home_list, bus_time_home2downtown_list, \
+           bus_route_home2downtown_list, bus_time_downtown2home_list, bus_route_downtown2home_list, \
+           drive_time_home2mukilteo_list, drive_time_mukilteo2home_list
+
 
 def get_commute_data_by_day(num_records, day_code):
     '''day code explanation:
     0:Monday-6:Sunday, 7:AllDays, 8:OnlyWeekdays, 9:OnlyWeekends
     '''
-    conn = pymysql.connect(host='192.168.100.3', port=32776, user='admin', passwd='oYwU50bjQ4Et', db='commute')
+    conn = pymysql.connect(host=tokens_and_addresses.sql_host, port=tokens_and_addresses.sql_port,
+                           user=tokens_and_addresses.sql_username, passwd=tokens_and_addresses.sql_password,
+                           db='commute2')
     cur = conn.cursor()
 
     if (day_code >= 0 and day_code <= 6):
@@ -84,6 +107,7 @@ def get_commute_data_by_day(num_records, day_code):
     conn.close()
 
     return date_list, min_to_red_list, min_to_home_list
+
 
 def get_fastest_transit(directions_object_array, now_epoch):
     fastest_dir = directions_object_array[0]
