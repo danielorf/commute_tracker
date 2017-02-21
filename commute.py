@@ -159,10 +159,3 @@ def date_formatter(val):
     else:
         print('Improper date value formatting')
         print(val)
-
-
-
-
-
-
-
