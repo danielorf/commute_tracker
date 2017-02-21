@@ -5,36 +5,42 @@ import time
 
 class Commute:
     date_list = []
-    drive_time_home2downtown_list = []
-    drive_time_downtown2home_list = []
-    bus_time_home2downtown_list = []
-    bus_route_home2downtown_list = []
-    bus_time_downtown2home_list = []
-    bus_route_downtown2home_list = []
-    drive_time_home2mukilteo_list = []
-    drive_time_mukilteo2home_list = []
+    # drive_time_home2downtown_list = []
+    # drive_time_downtown2home_list = []
+    # bus_time_home2downtown_list = []
+    # bus_route_home2downtown_list = []
+    # bus_time_downtown2home_list = []
+    # bus_route_downtown2home_list = []
+    # drive_time_home2mukilteo_list = []
+    # drive_time_mukilteo2home_list = []
+    drive_time_from_home_list = []
+    drive_time_to_home_list = []
+
+    def __init__(self, from_home_db_column, to_home_db_column):
+        self.from_home_db_column = from_home_db_column
+        self.to_home_db_column = to_home_db_column
 
     def get_commute_data(self, num_records):
         conn = pymysql.connect(host=tokens_and_addresses.sql_host, port=tokens_and_addresses.sql_port,
                                user=tokens_and_addresses.sql_username, passwd=tokens_and_addresses.sql_password,
                                db='commute2')
-        # cur = conn.cursor()
-        # cur.execute("select * from commute2 order by id desc limit {}".format(str(num_records)))
 
         query = "select * from commute2 order by id desc limit {}".format(str(num_records))
-        commute_df = sql.read_sql(query, con=conn)
+        commute_df = sql.read_sql_query(query, con=conn)
 
         start_time = time.time()
 
         date_list = []
-        self.drive_time_home2downtown_list = commute_df['time_home2downtown'].tolist()
-        self.drive_time_downtown2home_list = commute_df['time_downtown2home'].tolist()
-        self.bus_time_home2downtown_list = commute_df['time_home2downtownbus'].tolist()
-        self.bus_route_home2downtown_list = commute_df['route_home2downtownbus'].tolist()
-        self.bus_time_downtown2home_list = commute_df['time_downtown2homebus'].tolist()
-        self.bus_route_downtown2home_list = commute_df['route_downtown2homebus'].tolist()
-        self.drive_time_home2mukilteo_list = commute_df['time_home2mukilteo'].tolist()
-        self.drive_time_mukilteo2home_list = commute_df['time_mukilteo2home'].tolist()
+        # self.drive_time_home2downtown_list = commute_df['time_home2downtown'].tolist()
+        # self.drive_time_downtown2home_list = commute_df['time_downtown2home'].tolist()
+        # self.bus_time_home2downtown_list = commute_df['time_home2downtownbus'].tolist()
+        # self.bus_route_home2downtown_list = commute_df['route_home2downtownbus'].tolist()
+        # self.bus_time_downtown2home_list = commute_df['time_downtown2homebus'].tolist()
+        # self.bus_route_downtown2home_list = commute_df['route_downtown2homebus'].tolist()
+        # self.drive_time_home2mukilteo_list = commute_df['time_home2mukilteo'].tolist()
+        # self.drive_time_mukilteo2home_list = commute_df['time_mukilteo2home'].tolist()
+        self.drive_time_from_home_list = commute_df[self.from_home_db_column].tolist()
+        self.drive_time_to_home_list = commute_df[self.to_home_db_column].tolist()
 
         for row in commute_df.itertuples():
             # TODO: Consider pushing date formatting into the data collection portion of project.
@@ -51,7 +57,6 @@ class Commute:
 
         print('Total time: ', time.time() - start_time)
 
-        #cur.close()
         conn.close()
 
     def get_commute_data_by_day(self, num_records, day_code):
@@ -87,7 +92,7 @@ class Commute:
         elif (day_code == 8):
             query = "select * from commute2 " \
                         "where not (day_code=5 or day_code=6) " \
-                        "order by hour asc, minute asc " \
+                        "order by hour desc, minute desc " \
                         "limit {}".format(str(num_records))
 
             # cur.execute("select * from commute "
@@ -110,15 +115,18 @@ class Commute:
 
         start_time = time.time()
 
+        self.drive_time_from_home_list = commute_df[self.from_home_db_column].tolist()
+        self.drive_time_to_home_list = commute_df[self.to_home_db_column].tolist()
+
         date_list = []
-        self.drive_time_home2downtown_list = commute_df['time_home2downtown'].tolist()
-        self.drive_time_downtown2home_list = commute_df['time_downtown2home'].tolist()
-        self.bus_time_home2downtown_list = commute_df['time_home2downtownbus'].tolist()
-        self.bus_route_home2downtown_list = commute_df['route_home2downtownbus'].tolist()
-        self.bus_time_downtown2home_list = commute_df['time_downtown2homebus'].tolist()
-        self.bus_route_downtown2home_list = commute_df['route_downtown2homebus'].tolist()
-        self.drive_time_home2mukilteo_list = commute_df['time_home2mukilteo'].tolist()
-        self.drive_time_mukilteo2home_list = commute_df['time_mukilteo2home'].tolist()
+        # self.drive_time_home2downtown_list = commute_df['time_home2downtown'].tolist()
+        # self.drive_time_downtown2home_list = commute_df['time_downtown2home'].tolist()
+        # self.bus_time_home2downtown_list = commute_df['time_home2downtownbus'].tolist()
+        # self.bus_route_home2downtown_list = commute_df['route_home2downtownbus'].tolist()
+        # self.bus_time_downtown2home_list = commute_df['time_downtown2homebus'].tolist()
+        # self.bus_route_downtown2home_list = commute_df['route_downtown2homebus'].tolist()
+        # self.drive_time_home2mukilteo_list = commute_df['time_home2mukilteo'].tolist()
+        # self.drive_time_mukilteo2home_list = commute_df['time_mukilteo2home'].tolist()
 
         for row in commute_df.itertuples():
             # TODO: Consider pushing date formatting into the data collection portion of project.
