@@ -1,5 +1,4 @@
-import googlemaps, datetime, time, simplejson
-#from helper_functions import get_fastest_transit
+import googlemaps, datetime, time
 import pymysql
 import tokens_and_addresses
 
@@ -96,10 +95,6 @@ while True:
         time_driving_home_to_mukilteo = round(dir_driving_home_to_mukilteo[0]['legs'][0]['duration_in_traffic']['value'] / 60, 1)
         time_driving_mukilteo_to_home = round(dir_driving_mukilteo_to_home[0]['legs'][0]['duration_in_traffic']['value'] / 60, 1)
 
-        # print(time_driving_home_to_downtown)
-        # print(time_driving_downtown_to_home)
-        # print(time_driving_home_to_mukilteo)
-        # print(time_driving_mukilteo_to_home)
 
     except KeyError as e1:
         print('KeyError, missing dictionary key: ', e1)

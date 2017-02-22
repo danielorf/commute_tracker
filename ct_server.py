@@ -1,14 +1,9 @@
 from flask import Flask, jsonify, make_response, render_template
-from helper_functions import get_commute_data, get_commute_data_by_day
-from testing_data import test_date_list, test_time_to_red_list, test_time_to_home_list
 import tokens_and_addresses
 from commute import Commute
 import time
 
 app = Flask(__name__)
-
-# Testing data switch
-use_testing_data = False
 
 db_column_list_from_home = tokens_and_addresses.db_column_list_from_home
 db_column_list_to_home = tokens_and_addresses.db_column_list_to_home
@@ -22,11 +17,6 @@ def not_found(error):
 
 @app.route('/default/', methods=['GET'])
 def get_default_commute_plot():
-    # if use_testing_data:
-    #     date_list = test_date_list
-    #     min_to_red_list = test_time_to_red_list
-    #     min_to_home_list = test_time_to_home_list
-    # else:
 
     start_time = time.time()
 
@@ -54,9 +44,6 @@ def get_commute_plot(dest):
         if dest in column:
             to_home_db_column = column
 
-    from_home_commute_name = from_home_db_column
-    to_home_commute_name = to_home_db_column
-
     start_time = time.time()
 
     commute = Commute(from_home_db_column, to_home_db_column)
@@ -83,9 +70,6 @@ def get_commute_plot_num(dest, num):
         if dest in column:
             to_home_db_column = column
 
-    from_home_commute_name = from_home_db_column
-    to_home_commute_name = to_home_db_column
-
     start_time = time.time()
 
     commute = Commute(from_home_db_column, to_home_db_column)
@@ -105,11 +89,6 @@ def get_commute_plot_num(dest, num):
 @app.route('/commute_day/<dest>/<int:day_code>', methods=['GET'])
 def get_commute_plot_by_day(dest, day_code):
     dest = dest.lower()
-    # if use_testing_data:
-    #     date_list = test_date_list
-    #     min_to_red_list = test_time_to_red_list
-    #     min_to_home_list = test_time_to_home_list
-    # else:
 
     for column in db_column_list_from_home:
         if dest in column:
@@ -119,13 +98,9 @@ def get_commute_plot_by_day(dest, day_code):
         if dest in column:
             to_home_db_column = column
 
-    from_home_commute_name = from_home_db_column
-    to_home_commute_name = to_home_db_column
-
     start_time = time.time()
 
     commute = Commute(from_home_db_column, to_home_db_column)
-    # downtown_commute.get_commute_data(num)
     commute.get_commute_data_by_day(1000, day_code)
 
     print('Total time: ', time.time() - start_time)
@@ -143,6 +118,7 @@ def change_location(loc):
     global location
     location = loc
     return get_default_commute_plot()
+
 
 if __name__ == '__main__':
     app.run(debug=True,
