@@ -16,18 +16,28 @@
 
   <div class="btn-group btn-group-justified" role="group" aria-label="...">
       <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Location <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
+              <li><a href="/change_location/Downtown">Downtown</a>
+              </li>
+              <li><a href="/change_location/Mukilteo">Mukilteo</a>
+              </li>
+          </ul>
+        </div>
+      <div class="btn-group" role="group">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Recent <span class="caret"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
-              <li><a href="/commute/192">1 Day</a>
+              <li><a href="/commute/{{ location }}/288">1 Day</a>
               </li>
-              <li><a href="/commute/384">2 Days</a>
+              <li><a href="/commute/{{ location }}/576">2 Days</a>
               </li>
-              <li><a href="/commute/576">3 Days</a>
+              <li><a href="/commute/{{ location }}/864">3 Days</a>
               </li>
-              <li><a href="/commute/960">5 Days</a>
+              <li><a href="/commute/{{ location }}/1440">5 Days</a>
               </li>
-              <li><a href="/commute/1920">10 Days</a>
+              <li><a href="/commute/{{ location }}/2880">10 Days</a>
               </li>
           </ul>
         </div>
@@ -35,31 +45,32 @@
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">By Day <span class="caret"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
-              <li><a href="/commute_day/6">Sunday</a>
+              <li><a href="/commute_day/{{ location }}/6">Sunday</a>
               </li>
-              <li><a href="/commute_day/0">Monday</a>
+              <li><a href="/commute_day/{{ location }}/0">Monday</a>
               </li>
-              <li><a href="/commute_day/1">Tuesday</a>
+              <li><a href="/commute_day/{{ location }}/1">Tuesday</a>
               </li>
-              <li><a href="/commute_day/2">Wednesday</a>
+              <li><a href="/commute_day/{{ location }}/2">Wednesday</a>
               </li>
-              <li><a href="/commute_day/3">Thursday</a>
+              <li><a href="/commute_day/{{ location }}/3">Thursday</a>
               </li>
-              <li><a href="/commute_day/4">Friday</a>
+              <li><a href="/commute_day/{{ location }}/4">Friday</a>
               </li>
-              <li><a href="/commute_day/5">Saturday</a>
+              <li><a href="/commute_day/{{ location }}/5">Saturday</a>
               </li>
           </ul>
         </div>
       <div class="btn-group" role="group">
-          <a class="btn btn-default" href="/commute_day/8" role="button">Weekdays</a>
+          <a class="btn btn-default" href="/commute_day/{{ location }}/8" role="button">Weekdays</a>
       </div>
       <div class="btn-group" role="group">
-          <a class="btn btn-default" href="/commute_day/9" role="button">Weekends</a>
+          <a class="btn btn-default" href="/commute_day/{{ location }}/9" role="button">Weekends</a>
       </div>
 
   </div>
 
+  <!--<div><h1><center>Commute to {{ location }}</center></h1></div>-->
 
 <!--<div class="btn-group btn-group-justified">-->
     <!--&lt;!&ndash;<h2 class="text-primary text-center">Testing123</h2>&ndash;&gt;-->
@@ -77,8 +88,8 @@
 
       var trace3 = {
         x: {{ plot_data_date|tojson|safe }},
-        y: {{ plot_data_min2red }},
-        name: {{ plot_to_red_name|tojson|safe }},
+        y: {{ plot_data_from_home }},
+        name: {{ plot_from_home_name|tojson|safe }},
         //mode: 'lines+markers',
         mode: 'markers',
         //line: {shape: 'spline', smoothing: '50'},
@@ -88,7 +99,7 @@
 
       var trace4 = {
         x: {{ plot_data_date|tojson|safe }},
-        y: {{ plot_data_min2home }},
+        y: {{ plot_data_to_home }},
         name: {{ plot_to_home_name|tojson|safe }},
         //mode: 'lines+markers',
         mode: 'markers',
@@ -98,7 +109,7 @@
       };
 
       var layout = {
-          title: 'Commute Times',
+          title: 'Commute to {{ location }}',
           xaxis: {
             title: 'Departure Time',
             titlefont: {
