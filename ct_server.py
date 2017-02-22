@@ -17,21 +17,30 @@ def not_found(error):
 
 @app.route('/default/', methods=['GET'])
 def get_default_commute_plot():
+    global location
+    dest = location.lower()
+    for column in db_column_list_from_home:
+        if dest in column:
+            from_home_db_column = column
+
+    for column in db_column_list_to_home:
+        if dest in column:
+            to_home_db_column = column
 
     start_time = time.time()
 
-    downtown_commute = Commute('time_home2downtown', 'time_downtown2home')
-    downtown_commute.get_commute_data(5000)
+    commute = Commute(from_home_db_column, to_home_db_column)
+    commute.get_commute_data(5000)
 
     print('Total time: ', time.time() - start_time)
 
     return render_template('commute.html',
                            location=location,
-                           plot_from_home_name='time to '+location,
+                           plot_from_home_name='time to ' + location,
                            plot_to_home_name='time to Home',
-                           plot_data_date=downtown_commute.date_list,
-                           plot_data_from_home=downtown_commute.drive_time_from_home_list,
-                           plot_data_to_home=downtown_commute.drive_time_to_home_list)
+                           plot_data_date=commute.date_list,
+                           plot_data_from_home=commute.drive_time_from_home_list,
+                           plot_data_to_home=commute.drive_time_to_home_list)
 
 @app.route('/commute/<dest>', methods=['GET'])
 def get_commute_plot(dest):
