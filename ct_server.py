@@ -110,7 +110,7 @@ def get_commute_plot_by_day(dest, day_code):
     start_time = time.time()
 
     commute = Commute(from_home_db_column, to_home_db_column)
-    commute.get_commute_data_by_day(1000, day_code)
+    commute.get_commute_data_by_day(10000, day_code)
 
     print('Total time: ', time.time() - start_time)
 
