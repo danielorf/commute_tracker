@@ -3,10 +3,17 @@ import pymysql
 import tokens_and_addresses
 
 
-def get_fastest_transit(directions_object_array, now_epoch):
-    fastest_dir = directions_object_array[0]
-    fastest_dir_time = (directions_object_array[0]['legs'][0]['arrival_time']['value'] - now_epoch) / 60
-    for dirobj in directions_object_array:
+def get_fastest_transit(directions_object_list, now_epoch):
+    """
+    Returns fastest bus route and time based on current time
+
+    :param directions_object_list: List of Google Maps Directions objects each containing
+    transit directions between source and destination
+    :type directions_object_list: List of Google Maps Directions objects
+    """
+    fastest_dir = directions_object_list[0]
+    fastest_dir_time = (directions_object_list[0]['legs'][0]['arrival_time']['value'] - now_epoch) / 60
+    for dirobj in directions_object_list:
         temp_dir_time = (dirobj['legs'][0]['arrival_time']['value'] - now_epoch) / 60
         if temp_dir_time < fastest_dir_time:
             fastest_dir = dirobj
@@ -35,7 +42,6 @@ home = tokens_and_addresses.home_coords
 downtown = tokens_and_addresses.downtown_coords
 mukilteo = tokens_and_addresses.mukilteo_coords
 
-#db = pymysql.connect(host='192.168.100.3', port=32776, user='admin', passwd='oYwU50bjQ4Et', db='commute')
 db = pymysql.connect(host=tokens_and_addresses.sql_host, port=tokens_and_addresses.sql_port,
                      user=tokens_and_addresses.sql_username, passwd=tokens_and_addresses.sql_password,
                      db='commute2')
@@ -62,7 +68,6 @@ cursor.execute(sql)
 db.close()
 
 while True:
-    #db = pymysql.connect(host='192.168.100.3', port=32776, user='admin', passwd='oYwU50bjQ4Et', db='commute')
     db = pymysql.connect(host=tokens_and_addresses.sql_host, port=tokens_and_addresses.sql_port,
                          user=tokens_and_addresses.sql_username, passwd=tokens_and_addresses.sql_password,
                          db='commute2')
@@ -113,4 +118,4 @@ while True:
     print("committed to db @ {}".format(datetime.datetime.now()))
     db.close()
     print("closed db connection")
-    time.sleep(300)
+    time.sleep(300)  # Wait 5 min before next collecting commute data again
