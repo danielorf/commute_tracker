@@ -100,7 +100,7 @@ class Commute:
         elif (day_code == 8):
             query = "select * from commute2 " \
                         "where not (day_code=5 or day_code=6) " \
-                        "order by hour desc, minute desc " \
+                        "order by hour asc, minute asc " \
                         "limit {}".format(str(num_records))
 
         elif (day_code == 9):
