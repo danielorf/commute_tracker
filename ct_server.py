@@ -17,6 +17,7 @@ def not_found(error):
 
 @app.route('/default/', methods=['GET'])
 def get_default_commute_plot():
+    start_time = time.time()
     global location
     dest = location.lower()
     for column in db_column_list_from_home:
@@ -27,14 +28,15 @@ def get_default_commute_plot():
         if dest in column:
             to_home_db_column = column
 
-    start_time = time.time()
 
     commute = Commute(from_home_db_column, to_home_db_column)
     commute.get_commute_data(2500)
 
-    print('Total time: ', time.time() - start_time)
+    processing_time = time.time() - start_time
+    processing_time_string = '{}{}'.format(round(processing_time, 2), ' seconds ')
 
     return render_template('commute.html',
+                           processing_time=processing_time_string,
                            show_markers=False,
                            use_error_bars=False,
                            location=location,
@@ -49,6 +51,7 @@ def get_default_commute_plot():
 
 @app.route('/commute/<dest>', methods=['GET'])
 def get_commute_plot(dest):
+    start_time = time.time()
     dest = dest.lower()
     for column in db_column_list_from_home:
         if dest in column:
@@ -58,14 +61,15 @@ def get_commute_plot(dest):
         if dest in column:
             to_home_db_column = column
 
-    start_time = time.time()
 
     commute = Commute(from_home_db_column, to_home_db_column)
     commute.get_commute_data(5000)
 
-    print('Total time: ', time.time() - start_time)
+    processing_time = time.time() - start_time
+    processing_time_string = '{}{}'.format(round(processing_time, 2), ' seconds ')
 
     return render_template('commute.html',
+                           processing_time=processing_time_string,
                            show_markers=True,
                            use_error_bars=False,
                            location=location,
@@ -80,6 +84,7 @@ def get_commute_plot(dest):
 
 @app.route('/commute/<dest>/<int:num>', methods=['GET'])
 def get_commute_plot_num(dest, num):
+    start_time = time.time()
     dest = dest.lower()
     for column in db_column_list_from_home:
         if dest in column:
@@ -89,14 +94,15 @@ def get_commute_plot_num(dest, num):
         if dest in column:
             to_home_db_column = column
 
-    start_time = time.time()
 
     commute = Commute(from_home_db_column, to_home_db_column)
     commute.get_commute_data(num)
 
-    print('Total time: ', time.time() - start_time)
+    processing_time = time.time() - start_time
+    processing_time_string = '{}{}'.format(round(processing_time, 2), ' seconds ')
 
     return render_template('commute.html',
+                           processing_time=processing_time_string,
                            show_markers=False,
                            use_error_bars=False,
                            location=location,
@@ -112,6 +118,7 @@ def get_commute_plot_num(dest, num):
 
 @app.route('/commute_day/<dest>/<int:day_code>', methods=['GET'])
 def get_commute_plot_by_day(dest, day_code):
+    start_time = time.time()
     dest = dest.lower()
     for column in db_column_list_from_home:
         if dest in column:
@@ -121,14 +128,14 @@ def get_commute_plot_by_day(dest, day_code):
         if dest in column:
             to_home_db_column = column
 
-    start_time = time.time()
-
     commute = Commute(from_home_db_column, to_home_db_column)
     commute.get_commute_data_by_day(2016, day_code)  # data collected at 5min rate, 2016 samples per week
 
-    print('Total time: ', time.time() - start_time)
+    processing_time = time.time() - start_time
+    processing_time_string = '{}{}'.format(round(processing_time, 2), ' seconds ')
 
     return render_template('commute.html',
+                           processing_time=processing_time_string,
                            show_markers=False,
                            use_error_bars=False,
                            location=location,
@@ -143,8 +150,8 @@ def get_commute_plot_by_day(dest, day_code):
 
 @app.route('/commute_day_avg/<dest>/<int:day_code>', methods=['GET'])
 def get_commute_plot_by_day_avg(dest, day_code):
+    start_time = time.time()
     dest = dest.lower()
-
     for column in db_column_list_from_home:
         if dest in column:
             from_home_db_column = column
@@ -153,18 +160,14 @@ def get_commute_plot_by_day_avg(dest, day_code):
         if dest in column:
             to_home_db_column = column
 
-    start_time = time.time()
-
     commute = Commute(from_home_db_column, to_home_db_column)
     commute.get_commute_average(5000, day_code)
 
-    print('Total time: ', time.time() - start_time)
-
-    # print(commute.date_list)
-    # print(commute.drive_time_avg_from_home_list)
-    # print(commute.drive_time_avg_to_home_list)
+    processing_time = time.time() - start_time
+    processing_time_string = '{}{}'.format(round(processing_time, 2), ' seconds ')
 
     return render_template('commute.html',
+                           processing_time=processing_time_string,
                            show_markers=False,
                            use_error_bars=True,
                            location=location,
