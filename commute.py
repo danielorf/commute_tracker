@@ -169,16 +169,16 @@ class Commute:
         df_mean_stdev = pd.DataFrame(columns=columns)
 
         if (day_code == 8):
-            query = "select * from commute2 " \
+            query = "select hour, minute, {}, {} from commute2 " \
                         "where not (day_code=5 or day_code=6) " \
                         "order by hour asc, minute asc " \
-                        "limit {}".format(str(num_records))
+                        "limit {}".format(self.from_home_db_column, self.to_home_db_column, str(num_records))
 
         elif (day_code == 9):
-            query = "select * from commute2 " \
+            query = "select hour, minute, {}, {} from commute2 " \
                         "where day_code=5 or day_code=6 " \
                         "order by hour asc, minute asc " \
-                        "limit {}".format(str(num_records))
+                        "limit {}".format(self.from_home_db_column, self.to_home_db_column, str(num_records))
 
         commute_df = sql.read_sql(query, con=conn)
         start_time = time.time()

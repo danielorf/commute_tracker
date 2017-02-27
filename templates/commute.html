@@ -91,7 +91,7 @@
       var trace1 = {
         x: {{ plot_data_date|tojson|safe }},
         y: {{ plot_data_from_home }},
-        error_y: {type: 'data', array: {{ plot_data_stdev_from_home }}, thickness: 1.5, width: 1, visible: true},
+        error_y: {type: 'data', array: {{ plot_data_stdev_from_home }}, thickness: 2, width: 1, visible: true},
         name: {{ plot_from_home_name|tojson|safe }},
         mode: plot_mode,
         line: {shape: 'spline', smoothing: '5', width: 5},
@@ -102,7 +102,7 @@
       var trace2 = {
         x: {{ plot_data_date|tojson|safe }},
         y: {{ plot_data_to_home }},
-        error_y: {type: 'data', array: {{ plot_data_stdev_to_home }}, thickness: 1.5, width: 1, visible: true},
+        error_y: {type: 'data', array: {{ plot_data_stdev_to_home }}, thickness: 2, width: 1, visible: true},
         name: {{ plot_to_home_name|tojson|safe }},
         mode: plot_mode,
         line: {shape: 'spline', smoothing: '5', width: 5},
