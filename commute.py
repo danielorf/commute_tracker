@@ -1,4 +1,5 @@
 import pymysql, tokens_and_addresses, time
+import pandas as pd
 from pandas.io import sql
 
 
@@ -14,6 +15,10 @@ class Commute:
     date_list = []
     drive_time_from_home_list = []
     drive_time_to_home_list = []
+    drive_time_avg_from_home_list = []
+    drive_time_avg_to_home_list = []
+    drive_time_stdev_from_home_list = []
+    drive_time_stdev_to_home_list = []
 
     def __init__(self, from_home_db_column, to_home_db_column):
         """
@@ -67,6 +72,7 @@ class Commute:
         conn.close()
 
     def get_commute_data_by_day(self, num_records, day_code):
+        # TODO: Fix comments below
         '''
         Retrieves commute data for a particular day of the week or class of day (weekday/weekend)
         from database and assigns data to date_list, drive_time_from_home_list
@@ -85,29 +91,31 @@ class Commute:
         conn = pymysql.connect(host=tokens_and_addresses.sql_host, port=tokens_and_addresses.sql_port,
                                user=tokens_and_addresses.sql_username, passwd=tokens_and_addresses.sql_password,
                                db='commute2')
+        seconds_in_week = 60*60*24*7
+        epoch_time_week_ago = time.time()-seconds_in_week
 
         if (day_code >= 0 and day_code <= 6):
             query = "select * from commute2 " \
-                    "where day_code={} " \
+                    "where day_code={} and epoch_time>{}" \
                     "order by hour asc, minute asc " \
-                    "limit {}".format(day_code, str(num_records))
+                    "limit {}".format(day_code, epoch_time_week_ago, str(num_records))
 
-        elif (day_code == 7):
-            query = "select * from commute2 "\
-                        "order by hour asc, minute asc " \
-                        "limit {}".format(str(num_records))
-
-        elif (day_code == 8):
-            query = "select * from commute2 " \
-                        "where not (day_code=5 or day_code=6) " \
-                        "order by hour asc, minute asc " \
-                        "limit {}".format(str(num_records))
-
-        elif (day_code == 9):
-            query = "select * from commute2 " \
-                        "where day_code=5 or day_code=6 " \
-                        "order by hour asc, minute asc " \
-                        "limit {}".format(str(num_records))
+        # elif (day_code == 7):
+        #     query = "select * from commute2 "\
+        #                 "order by hour asc, minute asc " \
+        #                 "limit {}".format(str(num_records))
+        #
+        # elif (day_code == 8):
+        #     query = "select * from commute2 " \
+        #                 "where not (day_code=5 or day_code=6) " \
+        #                 "order by hour asc, minute asc " \
+        #                 "limit {}".format(str(num_records))
+        #
+        # elif (day_code == 9):
+        #     query = "select * from commute2 " \
+        #                 "where day_code=5 or day_code=6 " \
+        #                 "order by hour asc, minute asc " \
+        #                 "limit {}".format(str(num_records))
 
         commute_df = sql.read_sql(query, con=conn)
 
@@ -129,6 +137,83 @@ class Commute:
         print('Total time: ', time.time() - start_time)
 
         conn.close()
+
+    def get_commute_average(self, num_records, day_code):
+        # TODO: update comment below after writing logic
+        '''
+        Retrieves commute data for a particular day of the week or class of day (weekday/weekend)
+        from database and assigns data to date_list, drive_time_from_home_list
+        and drive_time_to_home_list.
+
+        day code explanation:  0:Monday-6:Sunday, 7:AllDays, 8:OnlyWeekdays, 9:OnlyWeekends
+
+        :param num_records: Number of database records to return
+        :type num_records: int
+
+        :param day_code: Code for a particular day of the week or class of day (weekday/weekend)
+        with the following format: 0:Monday-6:Sunday, 7:AllDays, 8:OnlyWeekdays, 9:OnlyWeekends
+        :type day_code: int
+        '''
+
+        conn = pymysql.connect(host=tokens_and_addresses.sql_host, port=tokens_and_addresses.sql_port,
+                               user=tokens_and_addresses.sql_username, passwd=tokens_and_addresses.sql_password,
+                               db='commute2')
+
+        avg_from_home = '{}{}'.format('avg_', self.from_home_db_column)
+        avg_to_home = '{}{}'.format('avg_', self.to_home_db_column)
+        stdev_from_home = '{}{}'.format('stdev_', self.from_home_db_column)
+        stdev_to_home = '{}{}'.format('stdev_', self.to_home_db_column)
+
+        columns = ['day_code', 'hour', 'minute', avg_from_home, avg_to_home, stdev_from_home, stdev_to_home]
+
+        df_mean_stdev = pd.DataFrame(columns=columns)
+
+        if (day_code == 8):
+            query = "select * from commute2 " \
+                        "where not (day_code=5 or day_code=6) " \
+                        "order by hour asc, minute asc " \
+                        "limit {}".format(str(num_records))
+
+        elif (day_code == 9):
+            query = "select * from commute2 " \
+                        "where day_code=5 or day_code=6 " \
+                        "order by hour asc, minute asc " \
+                        "limit {}".format(str(num_records))
+
+        commute_df = sql.read_sql(query, con=conn)
+        start_time = time.time()
+
+        for hour in range(0, 24):
+            commute_df_hour = commute_df[commute_df.hour == hour]
+            for minute in range(0, 41, 20):
+                commute_df_hour_minute = commute_df_hour[
+                    commute_df_hour['minute'].between(minute, minute + 20 - 1, inclusive=True)]
+                mean = commute_df_hour_minute.mean()
+                stdev = commute_df_hour_minute.std()
+                df_mean_stdev.loc[len(df_mean_stdev)] = [day_code, hour, minute,
+                                                         mean[self.from_home_db_column], mean[self.to_home_db_column],
+                                                         stdev[self.from_home_db_column], stdev[self.to_home_db_column]]
+
+        self.drive_time_avg_from_home_list = df_mean_stdev[avg_from_home].tolist()
+        self.drive_time_avg_to_home_list = df_mean_stdev[avg_to_home].tolist()
+        self.drive_time_stdev_from_home_list = df_mean_stdev[stdev_from_home].tolist()
+        self.drive_time_stdev_to_home_list = df_mean_stdev[stdev_to_home].tolist()
+
+        date_list = []
+
+        for row in df_mean_stdev.itertuples():
+            hour = date_formatter(int(row.hour))
+            minute = date_formatter(int(row.minute))
+            date = '{}:{}'.format(hour, minute)
+            date_list.append(date)
+
+        self.date_list = date_list
+
+        print('Total time: ', time.time() - start_time)
+
+        conn.close()
+
+        return True
 
 
 def date_formatter(date_val):

@@ -62,10 +62,10 @@
           </ul>
         </div>
       <div class="btn-group" role="group">
-          <a class="btn btn-default" href="/commute_day/{{ location }}/8" role="button">Weekdays</a>
+          <a class="btn btn-default" href="/commute_day_avg/{{ location }}/8" role="button">Weekday Avg</a>
       </div>
       <div class="btn-group" role="group">
-          <a class="btn btn-default" href="/commute_day/{{ location }}/9" role="button">Weekends</a>
+          <a class="btn btn-default" href="/commute_day_avg/{{ location }}/9" role="button">Weekend Avg</a>
       </div>
 
   </div>
@@ -86,25 +86,41 @@
   <div id="myDiv" style="width: 100%; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>
   <script>
 
-      var trace3 = {
+      var plot_mode
+      if ({{ show_markers|tojson }}){
+        plot_mode = 'lines+markers'
+      } else {
+        plot_mode = 'lines'
+      }
+
+      var y_axis_title, y_axis_title_size
+      if ({{ use_error_bars|tojson }}){
+        y_axis_title = 'Commute Time (min), One StDev error bars'
+        y_axis_title_size = 14
+      } else {
+        y_axis_title = 'Commute Time (min)'
+        y_axis_title_size = 18
+      }
+
+      var trace1 = {
         x: {{ plot_data_date|tojson|safe }},
         y: {{ plot_data_from_home }},
+        error_y: {type: 'data', array: {{ plot_data_stdev_from_home }}, thickness: 1.5, width: 1, visible: true},
         name: {{ plot_from_home_name|tojson|safe }},
-        //mode: 'lines+markers',
-        mode: 'markers',
-        //line: {shape: 'spline', smoothing: '50'},
-        opacity: 0.75,
+        mode: plot_mode,
+        line: {shape: 'spline', smoothing: '5', width: 5},
+        opacity: 1,
         type: 'scatter'
       };
 
-      var trace4 = {
+      var trace2 = {
         x: {{ plot_data_date|tojson|safe }},
         y: {{ plot_data_to_home }},
+        error_y: {type: 'data', array: {{ plot_data_stdev_to_home }}, thickness: 1.5, width: 1, visible: true},
         name: {{ plot_to_home_name|tojson|safe }},
-        //mode: 'lines+markers',
-        mode: 'markers',
-        //line: {shape: 'spline', smoothing: '50'},
-        opacity: 0.75,
+        mode: plot_mode,
+        line: {shape: 'spline', smoothing: '5', width: 5},
+        opacity: 1,
         type: 'scatter'
       };
 
@@ -119,16 +135,29 @@
             }
           },
           yaxis: {
-            title: 'Commute Time (min)',
+            title: y_axis_title,
             titlefont: {
               family: 'Courier New, monospace',
-              size: 18,
+              size: y_axis_title_size,
               color: '#7f7f7f'
             }
+          },
+          legend: {
+            x: 0,
+            y: 1,
+            traceorder: 'normal',
+            font: {
+              family: 'sans-serif',
+              size: 12,
+              color: '#000'
+            },
+            bgcolor: '#E2E2E2',
+            bordercolor: '#FFFFFF',
+            borderwidth: 2
           }
       };
 
-    var data = [trace3, trace4];
+    var data = [trace1, trace2];
 
     Plotly.newPlot('myDiv', data, layout);
 

@@ -30,17 +30,22 @@ def get_default_commute_plot():
     start_time = time.time()
 
     commute = Commute(from_home_db_column, to_home_db_column)
-    commute.get_commute_data(5000)
+    commute.get_commute_data(2500)
 
     print('Total time: ', time.time() - start_time)
 
     return render_template('commute.html',
+                           show_markers=False,
+                           use_error_bars=False,
                            location=location,
                            plot_from_home_name='time to ' + location,
                            plot_to_home_name='time to Home',
                            plot_data_date=commute.date_list,
                            plot_data_from_home=commute.drive_time_from_home_list,
-                           plot_data_to_home=commute.drive_time_to_home_list)
+                           plot_data_to_home=commute.drive_time_to_home_list,
+                           plot_data_stdev_from_home=[],
+                           plot_data_stdev_to_home=[]
+                           )
 
 @app.route('/commute/<dest>', methods=['GET'])
 def get_commute_plot(dest):
@@ -61,12 +66,17 @@ def get_commute_plot(dest):
     print('Total time: ', time.time() - start_time)
 
     return render_template('commute.html',
+                           show_markers=True,
+                           use_error_bars=False,
                            location=location,
                            plot_from_home_name='time to '+location,
                            plot_to_home_name='time to Home',
                            plot_data_date=commute.date_list,
                            plot_data_from_home=commute.drive_time_from_home_list,
-                           plot_data_to_home=commute.drive_time_to_home_list)
+                           plot_data_to_home=commute.drive_time_to_home_list,
+                           plot_data_stdev_from_home=[],
+                           plot_data_stdev_to_home=[]
+                           )
 
 @app.route('/commute/<dest>/<int:num>', methods=['GET'])
 def get_commute_plot_num(dest, num):
@@ -87,16 +97,52 @@ def get_commute_plot_num(dest, num):
     print('Total time: ', time.time() - start_time)
 
     return render_template('commute.html',
+                           show_markers=False,
+                           use_error_bars=False,
                            location=location,
                            plot_from_home_name='time to '+location,
                            plot_to_home_name='time to Home',
                            plot_data_date=commute.date_list,
                            plot_data_from_home=commute.drive_time_from_home_list,
-                           plot_data_to_home=commute.drive_time_to_home_list)
+                           plot_data_to_home=commute.drive_time_to_home_list,
+                           plot_data_stdev_from_home=[],
+                           plot_data_stdev_to_home=[]
+                           )
 
 
 @app.route('/commute_day/<dest>/<int:day_code>', methods=['GET'])
 def get_commute_plot_by_day(dest, day_code):
+    dest = dest.lower()
+    for column in db_column_list_from_home:
+        if dest in column:
+            from_home_db_column = column
+
+    for column in db_column_list_to_home:
+        if dest in column:
+            to_home_db_column = column
+
+    start_time = time.time()
+
+    commute = Commute(from_home_db_column, to_home_db_column)
+    commute.get_commute_data_by_day(2016, day_code)  # data collected at 5min rate, 2016 samples per week
+
+    print('Total time: ', time.time() - start_time)
+
+    return render_template('commute.html',
+                           show_markers=False,
+                           use_error_bars=False,
+                           location=location,
+                           plot_from_home_name='time to '+location,
+                           plot_to_home_name='time to Home',
+                           plot_data_date=commute.date_list,
+                           plot_data_from_home=commute.drive_time_from_home_list,
+                           plot_data_to_home=commute.drive_time_to_home_list,
+                           plot_data_stdev_from_home=[],
+                           plot_data_stdev_to_home=[]
+                           )
+
+@app.route('/commute_day_avg/<dest>/<int:day_code>', methods=['GET'])
+def get_commute_plot_by_day_avg(dest, day_code):
     dest = dest.lower()
 
     for column in db_column_list_from_home:
@@ -110,17 +156,26 @@ def get_commute_plot_by_day(dest, day_code):
     start_time = time.time()
 
     commute = Commute(from_home_db_column, to_home_db_column)
-    commute.get_commute_data_by_day(10000, day_code)
+    commute.get_commute_average(5000, day_code)
 
     print('Total time: ', time.time() - start_time)
 
+    # print(commute.date_list)
+    # print(commute.drive_time_avg_from_home_list)
+    # print(commute.drive_time_avg_to_home_list)
+
     return render_template('commute.html',
+                           show_markers=False,
+                           use_error_bars=True,
                            location=location,
                            plot_from_home_name='time to '+location,
                            plot_to_home_name='time to Home',
                            plot_data_date=commute.date_list,
-                           plot_data_from_home=commute.drive_time_from_home_list,
-                           plot_data_to_home=commute.drive_time_to_home_list)
+                           plot_data_from_home=commute.drive_time_avg_from_home_list,
+                           plot_data_to_home=commute.drive_time_avg_to_home_list,
+                           plot_data_stdev_from_home=commute.drive_time_stdev_from_home_list,
+                           plot_data_stdev_to_home=commute.drive_time_stdev_to_home_list
+                           )
 
 @app.route('/change_location/<loc>', methods=['GET'])
 def change_location(loc):
