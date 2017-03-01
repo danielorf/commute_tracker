@@ -168,6 +168,12 @@ class Commute:
 
         df_mean_stdev = pd.DataFrame(columns=columns)
 
+        if (day_code >= 0 and day_code <= 6):
+            query = "select hour, minute, {}, {} from commute2 " \
+                    "where day_code={} " \
+                    "order by hour asc, minute asc " \
+                    "limit {}".format(self.from_home_db_column, self.to_home_db_column, str(day_code), str(num_records))
+
         if (day_code == 8):
             query = "select hour, minute, {}, {} from commute2 " \
                         "where not (day_code=5 or day_code=6) " \
@@ -188,11 +194,14 @@ class Commute:
             for minute in range(0, 41, 20):
                 commute_df_hour_minute = commute_df_hour[
                     commute_df_hour['minute'].between(minute, minute + 20 - 1, inclusive=True)]
-                mean = commute_df_hour_minute.mean()
-                stdev = commute_df_hour_minute.std()
-                df_mean_stdev.loc[len(df_mean_stdev)] = [day_code, hour, minute,
-                                                         mean[self.from_home_db_column], mean[self.to_home_db_column],
-                                                         stdev[self.from_home_db_column], stdev[self.to_home_db_column]]
+                if len(commute_df_hour_minute) > 0:
+                    df_mean_stdev.loc[len(df_mean_stdev)] = [day_code, hour, minute,
+                                                             commute_df_hour_minute[self.from_home_db_column].mean(),
+                                                             commute_df_hour_minute[self.to_home_db_column].mean(),
+                                                             commute_df_hour_minute[self.from_home_db_column].std(),
+                                                             commute_df_hour_minute[self.to_home_db_column].std()]
+                else:
+                    continue
 
         self.drive_time_avg_from_home_list = df_mean_stdev[avg_from_home].tolist()
         self.drive_time_avg_to_home_list = df_mean_stdev[avg_to_home].tolist()

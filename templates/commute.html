@@ -62,11 +62,29 @@
           </ul>
         </div>
       <div class="btn-group" role="group">
-          <a class="btn btn-default" href="/commute_day_avg/{{ location }}/8" role="button">Weekday Avg</a>
-      </div>
-      <div class="btn-group" role="group">
-          <a class="btn btn-default" href="/commute_day_avg/{{ location }}/9" role="button">Weekend Avg</a>
-      </div>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Average <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
+              <li><a href="/commute_day_avg/{{ location }}/6">Sunday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/0">Monday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/1">Tuesday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/2">Wednesday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/3">Thursday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/4">Friday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/5">Saturday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/8">All Weekdays</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/9">All Weekends</a>
+              </li>
+          </ul>
+        </div>
   </div>
 
   <div id="myDiv" style="width: 100%; height: 600px;"><!-- Plotly chart will be drawn inside this DIV --></div>

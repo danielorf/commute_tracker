@@ -180,6 +180,7 @@ def get_commute_plot_by_day_avg(dest, day_code):
                            plot_data_stdev_to_home=commute.drive_time_stdev_to_home_list
                            )
 
+
 @app.route('/change_location/<loc>', methods=['GET'])
 def change_location(loc):
     global location
