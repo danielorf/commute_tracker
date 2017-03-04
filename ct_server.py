@@ -28,9 +28,8 @@ def get_default_commute_plot():
         if dest in column:
             to_home_db_column = column
 
-
-    commute = Commute(from_home_db_column, to_home_db_column)
-    commute.get_commute_data(2500)
+    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
+    commute.get_commute_data(5000)
 
     processing_time = time.time() - start_time
     processing_time_string = '{}{}'.format(round(processing_time, 2), ' seconds ')
@@ -61,8 +60,7 @@ def get_commute_plot(dest):
         if dest in column:
             to_home_db_column = column
 
-
-    commute = Commute(from_home_db_column, to_home_db_column)
+    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
     commute.get_commute_data(5000)
 
     processing_time = time.time() - start_time
@@ -94,8 +92,7 @@ def get_commute_plot_num(dest, num):
         if dest in column:
             to_home_db_column = column
 
-
-    commute = Commute(from_home_db_column, to_home_db_column)
+    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
     commute.get_commute_data(num)
 
     processing_time = time.time() - start_time
@@ -128,7 +125,7 @@ def get_commute_plot_by_day(dest, day_code):
         if dest in column:
             to_home_db_column = column
 
-    commute = Commute(from_home_db_column, to_home_db_column)
+    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
     commute.get_commute_data_by_day(2016, day_code)  # data collected at 5min rate, 2016 samples per week
 
     processing_time = time.time() - start_time
@@ -160,7 +157,7 @@ def get_commute_plot_by_day_avg(dest, day_code):
         if dest in column:
             to_home_db_column = column
 
-    commute = Commute(from_home_db_column, to_home_db_column)
+    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
     commute.get_commute_average(5000, day_code)
 
     processing_time = time.time() - start_time

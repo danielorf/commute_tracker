@@ -20,7 +20,7 @@ class Commute:
     drive_time_stdev_from_home_list = []
     drive_time_stdev_to_home_list = []
 
-    def __init__(self, from_home_db_column, to_home_db_column):
+    def __init__(self, table, from_home_db_column, to_home_db_column):
         """
         :param from_home_db_column: Name of database column containing commute times from
          home to a destination
@@ -30,6 +30,7 @@ class Commute:
          a destination to home.
         :type to_home_db_column: string
         """
+        self.table = table
         self.from_home_db_column = from_home_db_column
         self.to_home_db_column = to_home_db_column
 
@@ -45,7 +46,8 @@ class Commute:
                                user=tokens_and_addresses.sql_username, passwd=tokens_and_addresses.sql_password,
                                db='commute2')
 
-        query = "select * from commute2 order by id desc limit {}".format(str(num_records))
+        # query = "select * from commute2 order by id desc limit {}".format(str(num_records))
+        query = "select * from {} order by id desc limit {}".format(self.table, str(num_records))
         commute_df = sql.read_sql_query(query, con=conn)
 
         start_time = time.time()
@@ -55,8 +57,6 @@ class Commute:
         self.drive_time_to_home_list = commute_df[self.to_home_db_column].tolist()
 
         for row in commute_df.itertuples():
-            # TODO: Consider pushing date formatting into the data collection portion of project.
-            # It will require storing as string though.  Time the current implementation first.
             year = date_formatter(row.year)
             month = date_formatter(row.month)
             day = date_formatter(row.day)
@@ -74,11 +74,11 @@ class Commute:
     def get_commute_data_by_day(self, num_records, day_code):
         # TODO: Fix comments below
         '''
-        Retrieves commute data for a particular day of the week or class of day (weekday/weekend)
+        Retrieves commute data for a particular day of the week
         from database and assigns data to date_list, drive_time_from_home_list
         and drive_time_to_home_list.
 
-        day code explanation:  0:Monday-6:Sunday, 7:AllDays, 8:OnlyWeekdays, 9:OnlyWeekends
+        day code explanation:  0:Monday-6:Sunday
 
         :param num_records: Number of database records to return
         :type num_records: int
@@ -95,27 +95,10 @@ class Commute:
         epoch_time_week_ago = time.time()-seconds_in_week
 
         if (day_code >= 0 and day_code <= 6):
-            query = "select * from commute2 " \
+            query = "select * from {} " \
                     "where day_code={} and epoch_time>{}" \
                     "order by hour asc, minute asc " \
-                    "limit {}".format(day_code, epoch_time_week_ago, str(num_records))
-
-        # elif (day_code == 7):
-        #     query = "select * from commute2 "\
-        #                 "order by hour asc, minute asc " \
-        #                 "limit {}".format(str(num_records))
-        #
-        # elif (day_code == 8):
-        #     query = "select * from commute2 " \
-        #                 "where not (day_code=5 or day_code=6) " \
-        #                 "order by hour asc, minute asc " \
-        #                 "limit {}".format(str(num_records))
-        #
-        # elif (day_code == 9):
-        #     query = "select * from commute2 " \
-        #                 "where day_code=5 or day_code=6 " \
-        #                 "order by hour asc, minute asc " \
-        #                 "limit {}".format(str(num_records))
+                    "limit {}".format(self.table, day_code, epoch_time_week_ago, str(num_records))
 
         commute_df = sql.read_sql(query, con=conn)
 
@@ -139,11 +122,11 @@ class Commute:
         conn.close()
 
     def get_commute_average(self, num_records, day_code):
-        # TODO: update comment below after writing logic
         '''
-        Retrieves commute data for a particular day of the week or class of day (weekday/weekend)
-        from database and assigns data to date_list, drive_time_from_home_list
-        and drive_time_to_home_list.
+        Retrieves list of commute data average and standard deviation for a particular day of the week or
+        class of day (weekday/weekend) from database and assigns data to date_list, drive_time_from_home_list
+        and drive_time_to_home_list.  Average and standard deviation is computed on 20 minute increments.
+        Error bar length is equal to one standard deviation representing 68.3% of samples.
 
         day code explanation:  0:Monday-6:Sunday, 7:AllDays, 8:OnlyWeekdays, 9:OnlyWeekends
 
@@ -169,22 +152,22 @@ class Commute:
         df_mean_stdev = pd.DataFrame(columns=columns)
 
         if (day_code >= 0 and day_code <= 6):
-            query = "select hour, minute, {}, {} from commute2 " \
+            query = "select hour, minute, {}, {} from {} " \
                     "where day_code={} " \
                     "order by hour asc, minute asc " \
-                    "limit {}".format(self.from_home_db_column, self.to_home_db_column, str(day_code), str(num_records))
+                    "limit {}".format(self.from_home_db_column, self.to_home_db_column, self.table, str(day_code), str(num_records))
 
         if (day_code == 8):
-            query = "select hour, minute, {}, {} from commute2 " \
+            query = "select hour, minute, {}, {} from {} " \
                         "where not (day_code=5 or day_code=6) " \
                         "order by hour asc, minute asc " \
-                        "limit {}".format(self.from_home_db_column, self.to_home_db_column, str(num_records))
+                        "limit {}".format(self.from_home_db_column, self.to_home_db_column, self.table, str(num_records))
 
         elif (day_code == 9):
-            query = "select hour, minute, {}, {} from commute2 " \
+            query = "select hour, minute, {}, {} from {} " \
                         "where day_code=5 or day_code=6 " \
                         "order by hour asc, minute asc " \
-                        "limit {}".format(self.from_home_db_column, self.to_home_db_column, str(num_records))
+                        "limit {}".format(self.from_home_db_column, self.to_home_db_column, self.table, str(num_records))
 
         commute_df = sql.read_sql(query, con=conn)
         start_time = time.time()
