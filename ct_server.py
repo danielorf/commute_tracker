@@ -28,7 +28,7 @@ def get_default_commute_plot():
         if dest in column:
             to_home_db_column = column
 
-    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
+    commute = Commute('commute2', from_home_db_column, to_home_db_column)
     commute.get_commute_data(5000)
 
     processing_time = time.time() - start_time
@@ -60,7 +60,7 @@ def get_commute_plot(dest):
         if dest in column:
             to_home_db_column = column
 
-    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
+    commute = Commute('commute2', from_home_db_column, to_home_db_column)
     commute.get_commute_data(5000)
 
     processing_time = time.time() - start_time
@@ -92,7 +92,7 @@ def get_commute_plot_num(dest, num):
         if dest in column:
             to_home_db_column = column
 
-    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
+    commute = Commute('commute2', from_home_db_column, to_home_db_column)
     commute.get_commute_data(num)
 
     processing_time = time.time() - start_time
@@ -125,7 +125,7 @@ def get_commute_plot_by_day(dest, day_code):
         if dest in column:
             to_home_db_column = column
 
-    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
+    commute = Commute('commute2', from_home_db_column, to_home_db_column)
     commute.get_commute_data_by_day(2016, day_code)  # data collected at 5min rate, 2016 samples per week
 
     processing_time = time.time() - start_time
@@ -157,7 +157,7 @@ def get_commute_plot_by_day_avg(dest, day_code):
         if dest in column:
             to_home_db_column = column
 
-    commute = Commute('commute2_test', from_home_db_column, to_home_db_column)
+    commute = Commute('commute2', from_home_db_column, to_home_db_column)
     commute.get_commute_average(5000, day_code)
 
     processing_time = time.time() - start_time
@@ -184,6 +184,40 @@ def change_location(loc):
     location = loc
     return get_default_commute_plot()
 
+@app.route('/analysis/<dest>', methods=['GET'])
+def get_analysis(dest):
+    start_time = time.time()
+    dest = dest.lower()
+    for column in db_column_list_from_home:
+        if dest in column:
+            from_home_db_column = column
+
+    for column in db_column_list_to_home:
+        if dest in column:
+            to_home_db_column = column
+
+    commute = Commute('commute2', from_home_db_column, to_home_db_column)
+    commute.get_commute_average(5000, 8)
+    commute.get_commute_analysis(10000)
+
+    processing_time = time.time() - start_time
+    processing_time_string = '{}{}'.format(round(processing_time, 2), ' seconds ')
+
+    return render_template('analysis.html',
+                           processing_time=processing_time_string,
+                           show_markers=False,
+                           use_error_bars=True,
+                           location=location,
+                           plot_from_home_name='time to '+location,
+                           plot_to_home_name='time to Home',
+                           plot_data_date=commute.date_list,
+                           plot_data_from_home=commute.drive_time_avg_from_home_list,
+                           plot_data_to_home=commute.drive_time_avg_to_home_list,
+                           plot_data_stdev_from_home=commute.drive_time_stdev_from_home_list,
+                           plot_data_stdev_to_home=commute.drive_time_stdev_to_home_list,
+                           result_list=commute.analysis_result_str_list,
+                           result_list_min_max=commute.analysis_result_min_max_list
+                           )
 
 if __name__ == '__main__':
     app.run(debug=True,

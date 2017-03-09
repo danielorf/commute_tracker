@@ -19,6 +19,8 @@ class Commute:
     drive_time_avg_to_home_list = []
     drive_time_stdev_from_home_list = []
     drive_time_stdev_to_home_list = []
+    analysis_result_str_list = []
+    analysis_result_min_max_list = []
 
     def __init__(self, table, from_home_db_column, to_home_db_column):
         """
@@ -72,7 +74,6 @@ class Commute:
         conn.close()
 
     def get_commute_data_by_day(self, num_records, day_code):
-        # TODO: Fix comments below
         '''
         Retrieves commute data for a particular day of the week
         from database and assigns data to date_list, drive_time_from_home_list
@@ -205,8 +206,82 @@ class Commute:
 
         conn.close()
 
-        return True
+    def get_commute_analysis(self, num_records):
+        """
+        Retrieves list of commute data for all days from database and computes average and standard deviation for each
+        direction as well as rush hour date to and from home defined by morning rush hour between 6:00-10:00 and
+        evening rush hour between 15:00-19:00.  Results are assigned to analysis_result_str_list and
+        analysis_result_min_max_list.
 
+        :param num_records: Number of database records to return
+        :type num_records: int
+        """
+
+        conn = pymysql.connect(host=tokens_and_addresses.sql_host, port=tokens_and_addresses.sql_port,
+                               user=tokens_and_addresses.sql_username, passwd=tokens_and_addresses.sql_password,
+                               db='commute2')
+
+        query = "select hour, minute, day_code, {}, {} from {} " \
+                "order by id desc limit {}".format(self.from_home_db_column, self.to_home_db_column, self.table, str(num_records))
+        commute_df = sql.read_sql_query(query, con=conn)
+
+        average_from_home_list = []
+        stdev_from_home_list = []
+        average_to_home_list = []
+        stdev_to_home_list = []
+        average_from_home_morning_rush_list = []
+        stdev_from_home_morning_rush_list = []
+        average_to_home_evening_rush_list = []
+        stdev_to_home_evening_rush_list = []
+
+        for day in range (0,7):
+            commute_df_day = commute_df[commute_df.day_code == day]
+            average_from_home_list.append(round(commute_df_day[self.from_home_db_column].mean(), 2))
+            stdev_from_home_list.append(round(commute_df_day[self.from_home_db_column].std(), 2))
+            average_to_home_list.append(round(commute_df_day[self.to_home_db_column].mean(), 2))
+            stdev_to_home_list.append(round(commute_df_day[self.to_home_db_column].std(), 2))
+
+            commute_df_from_home_morning_rush = commute_df_day[
+                commute_df_day['hour'].between(6, 10, inclusive=True)]
+            average_from_home_morning_rush_list.append(
+                round(commute_df_from_home_morning_rush[self.from_home_db_column].mean(), 2))
+            stdev_from_home_morning_rush_list.append(
+                round(commute_df_from_home_morning_rush[self.from_home_db_column].std(), 2))
+
+            commute_df_to_home_evening_rush = commute_df_day[
+                commute_df_day['hour'].between(15, 19, inclusive=True)]
+            average_to_home_evening_rush_list.append(
+                round(commute_df_to_home_evening_rush[self.to_home_db_column].mean(), 2))
+            stdev_to_home_evening_rush_list.append(
+                round(commute_df_to_home_evening_rush[self.to_home_db_column].std(), 2))
+
+        result_list_min_max=[]
+        result_list_str = []
+        result_list_float = [average_from_home_list, stdev_from_home_list, average_to_home_list, stdev_to_home_list,
+                             average_from_home_morning_rush_list, stdev_from_home_morning_rush_list,
+                             average_to_home_evening_rush_list, stdev_to_home_evening_rush_list]
+
+        for i in range(len(result_list_float)):
+            min = result_list_float[i][0]
+            min_index = 0
+            max = result_list_float[i][0]
+            max_index = 0
+            string_convert_list = []
+            for j in range(len(result_list_float[i])):
+                string_convert_list.append(str(result_list_float[i][j]))
+            for j in range(len(result_list_float[i])-2):  # '-2' removed analysis from weekends
+                if result_list_float[i][j] < min:
+                    min = result_list_float[i][j]
+                    min_index = j
+                if result_list_float[i][j] > max:
+                    max = result_list_float[i][j]
+                    max_index = j
+
+            result_list_str.append(string_convert_list)
+            result_list_min_max.append([min_index, max_index])
+
+        self.analysis_result_str_list = result_list_str
+        self.analysis_result_min_max_list = result_list_min_max
 
 def date_formatter(date_val):
     """

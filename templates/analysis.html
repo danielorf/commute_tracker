@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>-->
+
+<head>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+</head>
+
+<style>
+    .top-buffer { margin-top:2%; }
+    .plot { height: 200px; }
+    td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    th {
+        text-align: center;
+        vertical-align: middle;
+    }
+    th.vertical {
+        text-align: middle;
+        vertical-align: middle;
+    }
+</style>
+
+<script>
+
+    var result_list_min_max = {{ result_list_min_max }}
+
+    var id_0_min = "#"+(0)+result_list_min_max[0][0].toString().toString()
+    var id_0_max = "#"+(0)+result_list_min_max[0][1].toString().toString()
+    var id_1_min = "#"+(1)+result_list_min_max[1][0].toString().toString()
+    var id_1_max = "#"+(1)+result_list_min_max[1][1].toString().toString()
+    var id_2_min = "#"+(2)+result_list_min_max[2][0].toString().toString()
+    var id_2_max = "#"+(2)+result_list_min_max[2][1].toString().toString()
+    var id_3_min = "#"+(3)+result_list_min_max[3][0].toString().toString()
+    var id_3_max = "#"+(3)+result_list_min_max[3][1].toString().toString()
+    var id_4_min = "#"+(4)+result_list_min_max[4][0].toString().toString()
+    var id_4_max = "#"+(4)+result_list_min_max[4][1].toString().toString()
+    var id_6_min = "#"+(6)+result_list_min_max[6][0].toString().toString()
+    var id_6_max = "#"+(6)+result_list_min_max[6][1].toString().toString()
+
+    $(document).ready(function() {
+        $(id_0_min).css({"color": "green", 'font-weight': 'bold'});
+        $(id_0_max).css({"color": "red", 'font-weight': 'bold'});
+        $(id_1_min).css({"color": "green", 'font-weight': 'bold'});
+        $(id_1_max).css({"color": "red", 'font-weight': 'bold'});
+        $(id_2_min).css({"color": "green", 'font-weight': 'bold'});
+        $(id_2_max).css({"color": "red", 'font-weight': 'bold'});
+        $(id_3_min).css({"color": "green", 'font-weight': 'bold'});
+        $(id_3_max).css({"color": "red", 'font-weight': 'bold'});
+        $(id_4_min).css({"color": "green", 'font-weight': 'bold'});
+        $(id_4_max).css({"color": "red", 'font-weight': 'bold'});
+        $(id_6_min).css({"color": "green", 'font-weight': 'bold'});
+        $(id_6_max).css({"color": "red", 'font-weight': 'bold'});
+        $(".weekend").css({"color": "grey",});
+    });
+
+</script>
+
+
+<body>
+
+  <div class="btn-group btn-group-justified" role="group" aria-label="...">
+      <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Location <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
+              <li><a href="/change_location/Downtown">Downtown</a>
+              </li>
+              <li><a href="/change_location/Mukilteo">Mukilteo</a>
+              </li>
+          </ul>
+        </div>
+      <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Recent <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
+              <li><a href="/commute/{{ location }}/288">1 Day</a>
+              </li>
+              <li><a href="/commute/{{ location }}/576">2 Days</a>
+              </li>
+              <li><a href="/commute/{{ location }}/864">3 Days</a>
+              </li>
+              <li><a href="/commute/{{ location }}/1440">5 Days</a>
+              </li>
+              <li><a href="/commute/{{ location }}/2880">10 Days</a>
+              </li>
+          </ul>
+        </div>
+      <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">By Day <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
+              <li><a href="/commute_day/{{ location }}/6">Sunday</a>
+              </li>
+              <li><a href="/commute_day/{{ location }}/0">Monday</a>
+              </li>
+              <li><a href="/commute_day/{{ location }}/1">Tuesday</a>
+              </li>
+              <li><a href="/commute_day/{{ location }}/2">Wednesday</a>
+              </li>
+              <li><a href="/commute_day/{{ location }}/3">Thursday</a>
+              </li>
+              <li><a href="/commute_day/{{ location }}/4">Friday</a>
+              </li>
+              <li><a href="/commute_day/{{ location }}/5">Saturday</a>
+              </li>
+          </ul>
+        </div>
+      <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Average <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right dropdown-menu-wide">
+              <li><a href="/commute_day_avg/{{ location }}/6">Sunday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/0">Monday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/1">Tuesday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/2">Wednesday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/3">Thursday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/4">Friday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/5">Saturday</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/8">All Weekdays</a>
+              </li>
+              <li><a href="/commute_day_avg/{{ location }}/9">All Weekends</a>
+              </li>
+          </ul>
+        </div>
+      <div class="btn-group" role="group">
+          <a class="btn btn-default" href="/analysis" role="button">Analysis </a>
+      </div>
+  </div>
+
+  <p>&nbsp;</p>
+
+
+  <div class="container">
+      <div class="row">
+          <div class="col-lg-6">
+
+              <div id="myDiv" style="width: 100%; height: 80%;">
+                  <!-- Plotly chart will be drawn inside this DIV --></div>
+              <script>
+
+                  var plot_mode
+                  if ({{ show_markers|tojson }}){
+                    plot_mode = 'lines+markers'
+                  } else {
+                    plot_mode = 'lines'
+                  }
+
+                  var y_axis_title, y_axis_title_size
+                  if ({{ use_error_bars|tojson }}){
+                    y_axis_title = 'Commute Time (min), One StDev error bars'
+                    y_axis_title_size = 14
+                  } else {
+                    y_axis_title = 'Commute Time (min)'
+                    y_axis_title_size = 18
+                  }
+
+                  var trace1 = {
+                    x: {{ plot_data_date|tojson|safe }},
+                    y: {{ plot_data_from_home }},
+                    error_y: {type: 'data', array: {{ plot_data_stdev_from_home }}, thickness: 2, width: 1, visible: true},
+                    name: {{ plot_from_home_name|tojson|safe }},
+                    mode: plot_mode,
+                    line: {shape: 'spline', smoothing: '5', width: 5},
+                    opacity: .7,
+                    type: 'scatter'
+                  };
+
+                  var trace2 = {
+                    x: {{ plot_data_date|tojson|safe }},
+                    y: {{ plot_data_to_home }},
+                    error_y: {type: 'data', array: {{ plot_data_stdev_to_home }}, thickness: 2, width: 1, visible: true},
+                    name: {{ plot_to_home_name|tojson|safe }},
+                    mode: plot_mode,
+                    line: {shape: 'spline', smoothing: '5', width: 5},
+                    opacity: .7,
+                    type: 'scatter'
+                  };
+
+                  var layout = {
+                      title: 'Commute to {{ location }}',
+                      titlefont: { size: '14' },
+                      xaxis: {
+                        title: 'Departure Time',
+                        titlefont: {
+                          family: 'Courier New, monospace',
+                          size: 18,
+                          color: '#7f7f7f'
+                        },
+                      },
+                      yaxis: {
+                        title: y_axis_title,
+                        titlefont: {
+                          family: 'Courier New, monospace',
+                          size: y_axis_title_size,
+                          color: '#7f7f7f'
+                        }
+                      },
+                      margin: {                           // update the left, bottom, right, top margin
+                        l: 40, r: 2
+                      },
+                      legend: {
+                        x: 0,
+                        y: 1,
+                        traceorder: 'normal',
+                        font: {
+                          family: 'sans-serif',
+                          size: 12,
+                          color: '#000'
+                        },
+                        bgcolor: '#E2E2E2',
+                        bordercolor: '#FFFFFF',
+                        borderwidth: 2
+                      }
+                  };
+
+                var data = [trace1, trace2];
+
+                Plotly.newPlot('myDiv', data, layout);
+
+
+              </script>
+
+          </div>
+          <div class="col-lg-6 top-buffer">
+              <table class="table"border="1">
+                  <thead>
+                  <tr>
+                      <th >Day</th>
+                      <th class="vertical">From Home Mean</th>
+                      <th class="vertical">From Home StDev</th>
+                      <th class="vertical">To Home Mean</th>
+                      <th class="vertical">To Home StDev</th>
+                      <th class="vertical">Morn. Rush Mean</th>
+                      <th class="vertical">Eve. Rush Mean</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                      <th scope="row">Mon</th>
+                      <td id="00">{{ result_list[0][0] }}</td>
+                      <td id="10">{{ result_list[1][0] }}</td>
+                      <td id="20">{{ result_list[2][0] }}</td>
+                      <td id="30">{{ result_list[3][0] }}</td>
+                      <td id="40">{{ result_list[4][0] }}</td>
+                      <td id="60">{{ result_list[6][0] }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Tue</th>
+                      <td id="01">{{ result_list[0][1] }}</td>
+                      <td id="11">{{ result_list[1][1] }}</td>
+                      <td id="21">{{ result_list[2][1] }}</td>
+                      <td id="31">{{ result_list[3][1] }}</td>
+                      <td id="41">{{ result_list[4][1] }}</td>
+                      <td id="61">{{ result_list[6][1] }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Wed</th>
+                      <td id="02">{{ result_list[0][2] }}</td>
+                      <td id="12">{{ result_list[1][2] }}</td>
+                      <td id="22">{{ result_list[2][2] }}</td>
+                      <td id="32">{{ result_list[3][2] }}</td>
+                      <td id="42">{{ result_list[4][2] }}</td>
+                      <td id="62">{{ result_list[6][2] }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Thu</th>
+                      <td id="03">{{ result_list[0][3] }}</td>
+                      <td id="13">{{ result_list[1][3] }}</td>
+                      <td id="23">{{ result_list[2][3] }}</td>
+                      <td id="33">{{ result_list[3][3] }}</td>
+                      <td id="43">{{ result_list[4][3] }}</td>
+                      <td id="63">{{ result_list[6][3] }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Fri</th>
+                      <td id="04">{{ result_list[0][4] }}</td>
+                      <td id="14">{{ result_list[1][4] }}</td>
+                      <td id="24">{{ result_list[2][4] }}</td>
+                      <td id="34">{{ result_list[3][4] }}</td>
+                      <td id="44">{{ result_list[4][4] }}</td>
+                      <td id="64">{{ result_list[6][4] }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Sat</th>
+                      <td class="weekend">{{ result_list[0][5] }}</td>
+                      <td class="weekend">{{ result_list[1][5] }}</td>
+                      <td class="weekend">{{ result_list[2][5] }}</td>
+                      <td class="weekend">{{ result_list[3][5] }}</td>
+                      <td class="weekend">{{ result_list[4][5] }}</td>
+                      <td class="weekend">{{ result_list[6][5] }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row">Sun</th>
+                      <td class="weekend">{{ result_list[0][6] }}</td>
+                      <td class="weekend">{{ result_list[1][6] }}</td>
+                      <td class="weekend">{{ result_list[2][6] }}</td>
+                      <td class="weekend">{{ result_list[3][6] }}</td>
+                      <td class="weekend">{{ result_list[4][6] }}</td>
+                      <td class="weekend">{{ result_list[6][6] }}</td>
+                  </tr>
+                  </tbody>
+              </table>
+          </div>
+      </div>
+  </div>
+
+  <p>&nbsp;</p>
+
+  <div align="right"><h6>Time to run: {{ processing_time|safe }}</h6></div>
+</body>
