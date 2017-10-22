@@ -158,7 +158,7 @@ def get_commute_plot_by_day_avg(dest, day_code):
             to_home_db_column = column
 
     commute = Commute('commute2', from_home_db_column, to_home_db_column)
-    commute.get_commute_average(5000, day_code)
+    commute.get_commute_average(100000, day_code)
 
     processing_time = time.time() - start_time
     processing_time_string = '{}{}'.format(round(processing_time, 2), ' seconds ')
