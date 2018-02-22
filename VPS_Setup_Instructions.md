@@ -11,3 +11,5 @@ To bind the correct port, set 'bind-address' to '0.0.0.0' in /etc/mysql/mysql.co
 
 Run data collection silently with 'nohup python data_collection.py &'
 Run webserver silently with 'gunicorn --workers=4 --bind=0.0.0.0:80 ct_server:app &'
+
+Set to run at boot by adding "/home/danielorf/commute_tracker/run_all.sh" before "exit 0" in "/etc/rc.local"
