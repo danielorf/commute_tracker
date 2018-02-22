@@ -5,4 +5,4 @@ Description: Commute tracking application written in python 3.5, flask, MySQL, j
 Installation requirements listed in 'requirements.txt'.
 
 The result is currently on Amazon AWS EC2 and RDS instances.  It will occasionally be taken down for updates.  The link is below:
-http://ec2-54-200-156-62.us-west-2.compute.amazonaws.com:8000/default/
+http://144.202.10.113/default/
