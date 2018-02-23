@@ -2,6 +2,7 @@ import googlemaps, datetime, time
 import pymysql
 import tokens_and_addresses
 from pytz import timezone
+from dateutil import tz
 
 
 def get_fastest_transit(directions_object_list, now_epoch):
@@ -77,13 +78,16 @@ while True:
         now_epoch = int(time.time())
         now_object = datetime.datetime
         now_utc = now_object.now()
-        now_local = now_utc.astimezone(timezone('US/Pacific'))
+
+        UTC = tz.gettz('UTC')
+        now_local = now_object.now().replace(tzinfo=UTC)
+        now_local.astimezone(timezone('US/Pacific'))
         year = int(now_local.year)
         month = int(now_local.month)
         day = int(now_local.day)
         hour = int(now_local.hour)
         minute = int(now_local.minute)
-        day_code = int(now_object.today().weekday())
+        day_code = int(now_local.today().weekday())
 
         dir_driving_home_to_downtown = gmaps.directions(home, downtown, departure_time=now_local)
         dir_driving_downtown_to_home = gmaps.directions(downtown, home, departure_time=now_local)
