@@ -12,7 +12,7 @@ location = tokens_and_addresses.location_list[0]  # Default to first on list
 
 @app.errorhandler(404)
 def not_found(error):
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return make_response(jsonify({'error': '404 Page not found'}), 404)
 
 
 @app.route('/default/', methods=['GET'])
