@@ -1,6 +1,7 @@
 import googlemaps, datetime, time
 import pymysql
 import tokens_and_addresses
+from pytz import timezone
 
 
 def get_fastest_transit(directions_object_list, now_epoch):
@@ -75,22 +76,23 @@ while True:
     try:
         now_epoch = int(time.time())
         now_object = datetime.datetime
-        now = now_object.now()
-        year = int(now.year)
-        month = int(now.month)
-        day = int(now.day)
-        hour = int(now.hour)
-        minute = int(now.minute)
+        now_utc = now_object.now()
+        now_local = now_utc.astimezone(timezone('US/Pacific'))
+        year = int(now_local.year)
+        month = int(now_local.month)
+        day = int(now_local.day)
+        hour = int(now_local.hour)
+        minute = int(now_local.minute)
         day_code = int(now_object.today().weekday())
 
-        dir_driving_home_to_downtown = gmaps.directions(home, downtown, departure_time=now)
-        dir_driving_downtown_to_home = gmaps.directions(downtown, home, departure_time=now)
-        dir_transit_home_to_downtown = gmaps.directions(home, downtown, departure_time=now, mode='transit',
+        dir_driving_home_to_downtown = gmaps.directions(home, downtown, departure_time=now_local)
+        dir_driving_downtown_to_home = gmaps.directions(downtown, home, departure_time=now_local)
+        dir_transit_home_to_downtown = gmaps.directions(home, downtown, departure_time=now_local, mode='transit',
                                                         transit_mode='bus', alternatives=True)
-        dir_transit_downtown_to_home = gmaps.directions(downtown, home, departure_time=now, mode='transit',
+        dir_transit_downtown_to_home = gmaps.directions(downtown, home, departure_time=now_local, mode='transit',
                                                         transit_mode='bus', alternatives=True)
-        dir_driving_home_to_mukilteo = gmaps.directions(home, mukilteo, departure_time=now)
-        dir_driving_mukilteo_to_home = gmaps.directions(mukilteo, home, departure_time=now)
+        dir_driving_home_to_mukilteo = gmaps.directions(home, mukilteo, departure_time=now_local)
+        dir_driving_mukilteo_to_home = gmaps.directions(mukilteo, home, departure_time=now_local)
 
         route_home2downtownbus, time_home2downtownbus = get_fastest_transit(dir_transit_home_to_downtown, now_epoch)
         route_downtown2homebus, time_downtown2homebus = get_fastest_transit(dir_transit_downtown_to_home, now_epoch)
