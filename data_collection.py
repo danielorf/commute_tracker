@@ -76,20 +76,20 @@ while True:
     try:
         now_epoch = int(time.time())
         now_object = datetime.datetime
-        now_utc = now_object.now()
+        now_local = now_object.now()
 
         utcmoment_naive = datetime.datetime.utcnow()
         utcmoment = utcmoment_naive.replace(tzinfo=pytz.utc)
-        localDatetime = utcmoment.astimezone(pytz.timezone('America/Los_Angeles'))
+        localDatetime = utcmoment.astimezone(pytz.timezone('America/Los_Angeles'))  #Needed to fix time zone issue if deployed outside of Pacific time zone
 
-        now_local = localDatetime
+        year = int(localDatetime.year)
+        month = int(localDatetime.month)
+        day = int(localDatetime.day)
+        hour = int(localDatetime.hour)
+        minute = int(localDatetime.minute)
+        day_code = int(localDatetime.today().weekday())
 
-        year = int(now_local.year)
-        month = int(now_local.month)
-        day = int(now_local.day)
-        hour = int(now_local.hour)
-        minute = int(now_local.minute)
-        day_code = int(now_local.today().weekday())
+        print(now_local)
 
         dir_driving_home_to_downtown = gmaps.directions(home, downtown, departure_time=now_local)
         dir_driving_downtown_to_home = gmaps.directions(downtown, home, departure_time=now_local)
